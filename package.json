@@ -1,38 +1,73 @@
 {
   "name": "express-mesto-gha",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "[Link to the project](http://PSK888.github.io/express-mesto-gha/)",
+  "main": "app.js",
   "dependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "body-parser": "^1.20.1",
+    "express": "^4.18.2",
+    "express-router": "^0.0.1",
+    "express-winston": "^4.2.0",
+    "mongod": "^2.0.0",
+    "mongodb": "^4.11.0",
+    "mongoose": "^6.7.2",
+    "path": "^0.12.7",
+    "webpack-dev-server": "^4.11.1",
+    "webpack-manifest-plugin": "^4.1.1",
+    "webpack-sources": "^3.2.3",
+    "websocket-driver": "^0.7.4",
+    "websocket-extensions": "^0.1.4",
+    "whatwg-encoding": "^1.0.5",
+    "whatwg-fetch": "^3.6.2",
+    "whatwg-mimetype": "^2.3.0",
+    "whatwg-url": "^8.7.0",
+    "which": "^2.0.2",
+    "which-boxed-primitive": "^1.0.2",
+    "winston": "^3.8.2",
+    "word-wrap": "^1.2.3",
+    "workbox-background-sync": "^6.5.4",
+    "workbox-broadcast-update": "^6.5.4",
+    "workbox-build": "^6.5.4",
+    "workbox-cacheable-response": "^6.5.4",
+    "workbox-core": "^6.5.4",
+    "workbox-expiration": "^6.5.4",
+    "workbox-google-analytics": "^6.5.4",
+    "workbox-navigation-preload": "^6.5.4",
+    "workbox-precaching": "^6.5.4",
+    "workbox-range-requests": "^6.5.4",
+    "workbox-recipes": "^6.5.4",
+    "workbox-routing": "^6.5.4",
+    "workbox-strategies": "^6.5.4",
+    "workbox-streams": "^6.5.4",
+    "workbox-sw": "^6.5.4",
+    "workbox-webpack-plugin": "^6.5.4",
+    "workbox-window": "^6.5.4",
+    "wrap-ansi": "^7.0.0",
+    "wrappy": "^1.0.2",
+    "write-file-atomic": "^3.0.3",
+    "ws": "^7.5.9",
+    "xml-name-validator": "^3.0.0",
+    "xmlchars": "^2.2.0",
+    "xtend": "^4.0.2",
+    "y18n": "^5.0.8",
+    "yallist": "^4.0.0",
+    "yaml": "^1.10.2",
+    "yargs": "^16.2.0",
+    "yargs-parser": "^20.2.9",
+    "yocto-queue": "^0.1.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npx eslint .",
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "author": "Pavel Krupin",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.27.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "nodemon": "^2.0.20"
   }
 }
