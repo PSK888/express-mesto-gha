@@ -1,7 +1,7 @@
 {
   "name": "express-mesto-gha",
   "version": "1.0.0",
-  "description": "[Link to the project](http://PSK888.github.io/express-mesto-gha/)",
+  "description": "http://PSK888.github.io/express-mesto-gha",
   "main": "app.js",
   "dependencies": {
     "body-parser": "^1.20.1",
@@ -57,7 +57,6 @@
     "yocto-queue": "^0.1.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "npx eslint .",
     "start": "node app.js",
     "dev": "nodemon app.js"
