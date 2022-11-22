@@ -6,14 +6,12 @@ const {
   createUser,
   updateUser,
   updateAvatar,
-  getUserInfo,
 } = require('../controllers/users');
 
-routerUsers.get('/users', getAllUsers);
-routerUsers.get('/users/me', getUserInfo);
-routerUsers.get('/users/:userId', getUserById);
-routerUsers.post('/users', createUser);
-routerUsers.patch('/users/me', updateUser);
-routerUsers.patch('/users/me/avatar', updateAvatar);
+routerUsers.get('/', getAllUsers);
+routerUsers.get('/:userId', getUserById);
+routerUsers.post('/', createUser);
+routerUsers.patch('/me', updateUser);
+routerUsers.patch('/me/avatar', updateAvatar);
 
 module.exports = routerUsers;

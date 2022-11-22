@@ -1,59 +1,63 @@
 const User = require('../models/user');
 
-module.exports.getAllUsers = (req, res) => {
+const {
+  STATUS_CREATED,
+  STATUS_OK,
+  STATUS_BAD_REQUEST,
+  STATUS_NOT_FOUND,
+  STATUS_INTERNAL_SERVER_ERROR,
+} = require('../utils/constants');
+
+const getAllUsers = (req, res) => {
   User.find({})
-    .then((user) => res.status(200).send(user))
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }))
+    .then((users) => res.status(STATUS_OK).send(users))
+    .catch(() => res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
 };
 
-module.exports.getUserById = (req, res) => {
+const getUserById = (req, res) => {
   User.findById(req.params.userId)
-    .orFail(new Error('NotValid'))
-    .then((user) => res.status(200).send(user))
+    .orFail(() => new Error('NotFound'))
+    .then((user) => res.status(STATUS_OK).send(user))
     .catch((err) => {
-      if (err.message === 'NotValid') { res.status(404).send({ message: 'Пользователь по указанному id не найден.' }); }
-      else { res.status(500).send({ message: 'Произошла ошибка' }) }
+      if (err.name === 'CastError') { res.status(STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении профиля.' }); } else if (err.message === 'NotFound') { res.status(STATUS_NOT_FOUND).send({ message: 'Пользователь с указанным id не найден.' }); } else { res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла внутренняя ошибка сервера' }); }
     });
 };
 
-module.exports.createUser = (req, res) => {
+const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(STATUS_CREATED).send({ data: user }))
     .catch((err) => {
-      if (err.message === 'NotFound') { res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' }); }
-      else { res.status(500).send({ message: 'Произошла ошибка' }) }
+      if (err.name === 'ValidationError' || err.name === 'CastError') { res.status(STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные ' }); } else { res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла внутренняя ошибка сервера' }); }
     });
 };
 
-module.exports.updateUser = (req, res) => {
+const updateUser = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about })
+    .orFail(() => new Error('NotFound'))
     .then((user) => {
-      res.status(200).send({ data: user });
+      res.status(STATUS_OK).send({ data: user });
     })
     .catch((err) => {
-      if (err.message === 'NotFound') { res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' }); }
-      else if (err.message === 'NotValid') { res.status(404).send({ message: 'Пользователь с указанным id не найден.' }) }
-      else { res.status(500).send({ message: 'Произошла ошибка' }) }
+      if (err.name === 'ValidationError' || err.name === 'CastError') { res.status(STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении профиля.' }); } else if (err.message === 'NotFound') { res.status(STATUS_NOT_FOUND).send({ message: 'Пользователь с указанным id не найден.' }); } else { res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла внутренняя ошибка сервера' }); }
     });
 };
 
-module.exports.updateAvatar = (req, res) => {
+const updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar })
-    .then((user) => {
-      res.status(200).send({ data: user });
-    })
+    .orFail(() => new Error('NotFound'))
+    .then((user) => { res.status(STATUS_OK).send({ data: user }); })
     .catch((err) => {
-      if (err.message === 'NotFound') { res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара. ' }); }
-      else if (err.message === 'NotValid') { res.status(404).send({ message: 'Пользователь с указанным id не найден. ' }) }
-      else { res.status(500).send({ message: 'Произошла ошибка' }) }
+      if (err.name === 'ValidationError' || err.name === 'CastError') { res.status(STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении аватара. ' }); } else if (err.message === 'NotFound') { res.status(STATUS_NOT_FOUND).send({ message: 'Пользователь с указанным id не найден. ' }); } else { res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла внутренняя ошибка сервера' }); }
     });
 };
 
-module.exports.getUserInfo = (req, res) => {
-  User.findById(req.user._id)
-    .then((user) => res.status(200).send(user))
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка yfqltysif' }))
+module.exports = {
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  updateAvatar,
 };
