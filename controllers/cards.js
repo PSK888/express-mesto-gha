@@ -36,7 +36,12 @@ const deleteCardById = (req, res) => {
           .then(() => res.send(card));
       }
     })
-    .catch(() => res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла внутренняя ошибка сервера' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
+      }
+      res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла внутренняя ошибка сервера' })
+    });
 };
 
 const likeCard = (req, res) => {
