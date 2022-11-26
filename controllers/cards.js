@@ -10,7 +10,7 @@ const {
 
 const getAllCards = (req, res) => {
   Card.find({})
-    .then((card) => res.status(STATUS_OK).send(card))
+    .then((cards) => res.status(STATUS_OK).send(cards))
     .catch(() => res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла внутренняя ошибка сервера' }));
 };
 
@@ -29,7 +29,7 @@ const createCard = (req, res) => {
 const deleteCardById = (req, res) => {
   Card.findById(req.params.cardId)
     .orFail(() => new Error('NotFound'))
-    .then(() => res.status(STATUS_OK).send({ message: 'Карточка удалена.' }))
+    .then((card) => res.status(STATUS_OK).send(card, { message: 'Карточка удалена.' }))
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(STATUS_BAD_REQUEST).send({ message: 'Карточка с указанным id не найдена.' });
