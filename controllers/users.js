@@ -20,12 +20,11 @@ const getUserById = (req, res) => {
     .then((user) => res.status(STATUS_OK).send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные.' });
-      } else if (err.message === 'NotFound') {
-        res.status(STATUS_NOT_FOUND).send({ message: 'Пользователь с указанным id не найден.' });
-      } else {
-        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла внутренняя ошибка сервера' });
+        return res.status(STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные 11111.' });
+      } if (err.message === 'NotFound') {
+        return res.status(STATUS_NOT_FOUND).send({ message: 'Пользователь с указанным id не найден.' });
       }
+      return res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла внутренняя ошибка сервера' });
     });
 };
 
@@ -34,45 +33,36 @@ const createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.status(STATUS_CREATED).send(user))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные ' });
-      } else {
-        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла внутренняя ошибка сервера' });
+      if (err.name === 'ValidationError') {
+        return res.status(STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       }
+      return res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла внутренняя ошибка сервера' });
     });
 };
 
 const updateUser = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-    .orFail(() => new Error('NotFound'))
     .then((user) => {
       res.status(STATUS_OK).send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
-      } else if (err.message === 'NotFound') {
-        res.status(STATUS_NOT_FOUND).send({ message: 'Пользователь с указанным id не найден.' });
-      } else {
-        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла внутренняя ошибка сервера' });
+      if (err.name === 'ValidationError') {
+        return res.status(STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
       }
+      return res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла внутренняя ошибка сервера' });
     });
 };
 
 const updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .orFail(() => new Error('NotFound'))
     .then((user) => { res.status(STATUS_OK).send(user); })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении аватара. ' });
-      } else if (err.message === 'NotFound') {
-        res.status(STATUS_NOT_FOUND).send({ message: 'Пользователь с указанным id не найден. ' });
-      } else {
-        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла внутренняя ошибка сервера' });
+      if (err.name === 'ValidationError') {
+        return res.status(STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении аватара. ' });
       }
+      return res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Произошла внутренняя ошибка сервера' });
     });
 };
 
