@@ -28,9 +28,14 @@ const createCard = (req, res) => {
 
 const deleteCardById = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .orFail(() => new Error('NotFound'))
-
-    .then((card) => res.status(STATUS_OK).send({ data: card, message: 'Карточка удалена.' }))
+    .then((card) => {
+      if (card === null) {
+        res.status(STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
+      } else {
+        card.remove()
+          .then(() => res.send(card));
+      }
+    })
     .catch((err) => {
       if (err.message === 'NotFound') {
         return res.status(STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
