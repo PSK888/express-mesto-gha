@@ -27,13 +27,11 @@ const createCard = (req, res) => {
 };
 
 const deleteCardById = (req, res) => {
-  Card.findById(req.params.cardId)
+  Card.findById(req.user._id)
     .orFail(() => new Error('NotFound'))
-    .then((card) => res.status(STATUS_OK).send(card, { message: 'Карточка удалена.' }))
+    .then(() => res.status(STATUS_OK).send({ message: 'Карточка удалена.' }))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(STATUS_BAD_REQUEST).send({ message: 'Карточка с указанным id не найдена.' });
-      } if (err.message === 'NotFound') {
+      if (err.message === 'NotFound') {
         return res.status(STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
       }
       return res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка.' });
