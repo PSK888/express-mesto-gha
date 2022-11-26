@@ -1,5 +1,7 @@
 # express-mesto-gha
 
+[![Tests 13 sprint](https://github.com/PSK888/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/PSK888/express-mesto-gha/actions/workflows/tests-13-sprint.yml)
+
 [Link to the project](http://PSK888.github.io/express-mesto-gha/)
 
 ------
