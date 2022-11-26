@@ -29,7 +29,7 @@ const createCard = (req, res) => {
 const deleteCardById = (req, res) => {
   Card.findById(req.params.cardId)
     .orFail(() => new Error('NotFound'))
-    .then((card) => { if (card.owner != req.user._id) { throw new ForbiddenError('You can not delete not yours cards'); } return card.remove(); })
+    .then((card) => { card.remove(); })
     .then(() => res.status(STATUS_OK).send({ message: 'Карточка удалена.' }))
     .catch((err) => {
       if (err.message === 'NotFound') {
