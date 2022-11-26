@@ -27,15 +27,18 @@ const createCard = (req, res) => {
 };
 
 const deleteCardById = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .orFail(() => new Error('NotFound'))
-    .then((card) => res.status(STATUS_OK).send({ data: card, message: 'Карточка удалена.' }))
-    .catch((err) => {
-      if (err.message === 'NotFound') {
-        return res.status(STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
-      }
-      return res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка.' });
-    });
+  const { cardId } = req.params;
+  Card.findById(cardId)
+    .then((card) => {
+      if (!card) { throw new NotFoundError('Card not found'); }
+      // eslint-disable-next-line eqeqeq
+      if (card.owner != req.user._id) { throw new ForbiddenError('You can not delete not yours cards'); }
+      return card.remove();
+    })
+    .then(() => {
+      res.status(STATUS_OK).send({ message: `Card ${cardId} has been removed` });
+    })
+    .catch(next);
 };
 
 const likeCard = (req, res) => {
