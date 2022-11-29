@@ -26,6 +26,10 @@ app.post('/signup', createUser);
 app.use('/users', auth, routerUsers);
 app.use('/cards', auth, routerCards);
 
+app.use(auth, (req, res, next) => {
+  next(new NotFoundError('Такой страницы не существует'));
+});
+
 app.use('*', (req, res) => {
   res.status(STATUS_NOT_FOUND).send({ message: 'Запрошенный ресурс не найден' });
 });
