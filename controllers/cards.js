@@ -29,18 +29,17 @@ const createCard = (req, res, next) => {
 
 const deleteCardById = (req, res, next) => {
   Card.findById(req.params.cardId)
-    .orFail(() => {
-      throw new NotFoundError('Карточка не найдена');
-    })
-    // eslint-disable-next-line consistent-return
+    .orFail(() => next(new NotFoundError('Карточка не найдена')))
     .then((card) => {
-      if (card.owner !== req.user._id) {
-        return next(new RightsError('Нельзя удалить карточку другого пользователя'));
+      if (!card.owner.equals(req.user._id)) {
+        next(new RightsError('Нельзя удалить карточку другого пользователя'));
+      } else {
+        Card.findByIdAndRemove(req.params.cardId)
+          .then(() => res.send(card))
+          .catch(next);
       }
-      Card.findByIdAndRemove(req.params.cardId)
-        .then(() => res.send(card))
-        .catch(next);
-    });
+    })
+    .catch(next)
 };
 
 const likeCard = (req, res, next) => {
