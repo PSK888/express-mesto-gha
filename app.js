@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 
 const mongoDB = 'mongodb://localhost:27017/mestodb';
 const app = express();
@@ -50,3 +51,5 @@ app.use((err, req, res, next) => {
   res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: err.message });
   next();
 });
+
+app.use(errors());
