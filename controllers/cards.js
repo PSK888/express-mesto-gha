@@ -32,14 +32,15 @@ const deleteCardById = (req, res, next) => {
     .orFail(() => {
       throw new NotFoundError('Карточка не найдена');
     })
+    // eslint-disable-next-line consistent-return
     .then((card) => {
       if (card.owner !== req.user._id) {
         return next(new RightsError('Нельзя удалить карточку другого пользователя'));
       }
-      return card.remove()
-        .then(() => res.status(200).send({ message: 'Карточка удалена' }));
-    })
-    .catch(next);
+      Card.findByIdAndRemove(req.params.cardId)
+        .then(() => res.send(card))
+        .catch(next);
+    });
 };
 
 const likeCard = (req, res, next) => {
