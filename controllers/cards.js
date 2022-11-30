@@ -39,7 +39,13 @@ const deleteCardById = (req, res, next) => {
           .catch(next);
       }
     })
-    .catch(next)
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new DataError('Переданы некорректные данные для удалении карточки.'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 const likeCard = (req, res, next) => {
