@@ -7,7 +7,7 @@ const app = express();
 const { celebrate, Joi } = require('celebrate');
 const auth = require('./middlewares/auth');
 const { createUser, login } = require('./controllers/users');
-const AuthError = require('./errors/AuthError');
+const NotFoundError = require('./errors/NotFoundError');
 const { STATUS_INTERNAL_SERVER_ERROR } = require('./utils/constants');
 
 const { PORT = 3000 } = process.env;
@@ -44,12 +44,19 @@ app.post('/signup', celebrate({
 }), createUser);
 
 app.use(auth, (req, res, next) => {
-  next(new AuthError('Необходима авторизация'));
+  next(new NotFoundError('Запрошенный ресурс не найден'));
 });
 
 app.use((err, req, res, next) => {
-  res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: err.message });
+  res
+    .status(err.statusCode || 500)
+    .send({ message: err.message });
   next();
 });
+
+/*app.use((err, req, res, next) => {
+  res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: err.message });
+  next();
+});*/
 
 app.use(errors());
