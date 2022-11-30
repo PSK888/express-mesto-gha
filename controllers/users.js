@@ -7,14 +7,9 @@ const DataError = require('../errors/DataError');
 const EmailError = require('../errors/EmailError');
 const AuthError = require('../errors/AuthError');
 
-const {
-  STATUS_CREATED,
-  STATUS_OK,
-} = require('../utils/constants');
-
 const getAllUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.status(STATUS_OK).send(users))
+    .then((users) => res.send(users))
     .catch(next);
 };
 
@@ -23,7 +18,7 @@ const getUserById = (req, res, next) => {
     .orFail(() => {
       throw new NotFoundError('Пользователь с таким id не найден');
     })
-    .then((user) => res.status(STATUS_OK).send(user))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new DataError('Неверный запрос или данные'));
@@ -35,7 +30,7 @@ const getUserById = (req, res, next) => {
 
 const getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
-    .then((user) => res.status(STATUS_OK).send(user))
+    .then((user) => res.send(user))
     .catch(next);
 };
 
@@ -46,7 +41,7 @@ const updateUser = (req, res, next) => {
       throw new NotFoundError('Пользователь не найден');
     })
     .then((user) => {
-      res.status(STATUS_OK).send(user);
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -60,7 +55,7 @@ const updateUser = (req, res, next) => {
 const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .then((user) => { res.status(STATUS_OK).send(user); })
+    .then((user) => { res.send(user); })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new DataError('Переданы некорректные данные'));
@@ -90,23 +85,19 @@ const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  User.findOne({ email })
-    .then((user) => {
-      if (user) {
-        throw new EmailError('Пользователь с таким email уже существует');
-      }
-      return bcrypt.hash(password, 10)
-        .then((hash) => User.create({
-          name, about, avatar, email, password: hash,
-        }));
-    })
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
     .then((user) => {
       const newUser = user.toObject();
       delete newUser.password;
-      res.status(STATUS_CREATED).send(newUser);
+      res.send(newUser);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.code === 11000) {
+        next(new EmailError('Пользователь с таким email уже существует'));
+      } else if (err.name === 'ValidationError') {
         next(new DataError('Переданы некорректные данные'));
       } else {
         next(err);

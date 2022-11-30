@@ -3,14 +3,9 @@ const NotFoundError = require('../errors/NotFoundError');
 const DataError = require('../errors/DataError');
 const RightsError = require('../errors/RightsError');
 
-const {
-  STATUS_CREATED,
-  STATUS_OK,
-} = require('../utils/constants');
-
 const getAllCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.status(STATUS_OK).send(cards))
+    .then((cards) => res.send(cards))
     .catch(next);
 };
 
@@ -18,12 +13,13 @@ const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
-    .then((card) => res.status(STATUS_CREATED).send(card))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new DataError('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -56,12 +52,13 @@ const likeCard = (req, res, next) => {
   )
     .orFail(() => { throw new NotFoundError('Карточка не найдена'); })
 
-    .then((card) => { res.status(STATUS_OK).send({ data: card }); })
+    .then((card) => { res.send({ data: card }); })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new DataError('Переданы некорректные данные для постановки лайка.'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -72,12 +69,13 @@ const dislikeCard = (req, res, next) => {
     { new: true },
   )
     .orFail(() => { throw new NotFoundError('Карточка не найдена'); })
-    .then((card) => { res.status(STATUS_OK).send({ data: card }); })
+    .then((card) => { res.send({ data: card }); })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new DataError('Переданы некорректные данные для постановки лайка.'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
