@@ -43,9 +43,9 @@ app.post('/signup', celebrate({
   }),
 }), createUser);
 
-app.use(auth, (req, res, next) => {
+/*app.use(auth, (req, res, next) => {
   next(new NotFoundError('Запрошенный ресурс не найден'));
-});
+});*/
 
 app.use((err, req, res, next) => {
   res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: err.message });

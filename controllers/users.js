@@ -35,17 +35,8 @@ const getUserById = (req, res, next) => {
 
 const getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(() => {
-      throw new NotFoundError('Пользователь с таким id не найден');
-    })
     .then((user) => res.status(STATUS_OK).send(user))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new DataError('Неверный запрос или данные'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 const createUser = (req, res, next) => {
