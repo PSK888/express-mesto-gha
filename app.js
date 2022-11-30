@@ -1,15 +1,19 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { errors } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 
-const mongoDB = 'mongodb://localhost:27017/mestodb';
-const app = express();
-const { celebrate, Joi } = require('celebrate');
 const auth = require('./middlewares/auth');
+
 const { createUser, login } = require('./controllers/users');
-const NotFoundError = require('./errors/NotFoundError');
 
 const { PORT = 3000 } = process.env;
+
+const app = express();
+
+const mongoDB = 'mongodb://localhost:27017/mestodb';
+
+const NotFoundError = require('./errors/NotFoundError');
+
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 
@@ -42,6 +46,8 @@ app.post('/signup', celebrate({
   }),
 }), createUser);
 
+app.use(errors());
+
 app.use(auth, (req, res, next) => {
   next(new NotFoundError('Запрошенный ресурс не найден'));
 });
@@ -52,5 +58,3 @@ app.use((err, req, res, next) => {
     .send({ message: err.message });
   next();
 });
-
-app.use(errors());
