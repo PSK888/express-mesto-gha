@@ -3,10 +3,11 @@ const mongoose = require('mongoose');
 
 const mongoDB = 'mongodb://localhost:27017/mestodb';
 const app = express();
+const { celebrate, Joi } = require('celebrate');
 const auth = require('./middlewares/auth');
 const { createUser, login } = require('./controllers/users');
 const NotFoundError = require('./errors/NotFoundError');
-const { STATUS_NOT_FOUND } = require('./utils/constants');
+const { STATUS_INTERNAL_SERVER_ERROR } = require('./utils/constants');
 
 const { PORT = 3000 } = process.env;
 const routerUsers = require('./routes/users');
@@ -21,15 +22,31 @@ app.use(express.json());
 
 mongoose.connect(mongoDB);
 
-app.post('/signin', login);
-app.post('/signup', createUser);
 app.use('/users', auth, routerUsers);
 app.use('/cards', auth, routerCards);
 
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  }),
+}), login);
+
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern(/https?:\/\/(www\.)?[\w]{1,}\.([\w\-._~:?#[\]@!$&'()*+,;=]*)/),
+  }),
+}), createUser);
+
 app.use(auth, (req, res, next) => {
-  next(new NotFoundError('Такой страницы не существует'));
+  next(new NotFoundError('Запрошенный ресурс не найден'));
 });
 
-app.use('*', (req, res) => {
-  res.status(STATUS_NOT_FOUND).send({ message: 'Запрошенный ресурс не найден' });
+app.use((err, req, res, next) => {
+  res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: err.message });
+  next();
 });
