@@ -8,7 +8,6 @@ const { celebrate, Joi } = require('celebrate');
 const auth = require('./middlewares/auth');
 const { createUser, login } = require('./controllers/users');
 const NotFoundError = require('./errors/NotFoundError');
-const { STATUS_INTERNAL_SERVER_ERROR } = require('./utils/constants');
 
 const { PORT = 3000 } = process.env;
 const routerUsers = require('./routes/users');
@@ -53,10 +52,5 @@ app.use((err, req, res, next) => {
     .send({ message: err.message });
   next();
 });
-
-/*app.use((err, req, res, next) => {
-  res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: err.message });
-  next();
-});*/
 
 app.use(errors());
